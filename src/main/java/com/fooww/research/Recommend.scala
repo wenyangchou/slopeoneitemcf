@@ -1,7 +1,6 @@
-package com.fooww.research.similarity
+package com.fooww.research
 
 import org.apache.spark.rdd.RDD
-
 
 /**
   * @author ：zwy

@@ -1,5 +1,4 @@
-package com.fooww.research.similarity
-
+package com.fooww.research
 
 /**
   * @author ：zwy
