@@ -8,7 +8,11 @@ import org.apache.spark.rdd.RDD
   */
 object UserSimilarity {
 
-  //余弦相似度
+  /**
+    * 用户与用户的余弦相似度，步骤2
+    * @param rantRDD  user,item,rant
+    * @return user,user,similarity
+    */
   def getCosineSimilarity(rantRDD:RDD[(Long,Long,Int)]):RDD[(Long,Long,Double)]={
     val item_user_score = rantRDD.map(f => (f._2, (f._1, f._3)))
 

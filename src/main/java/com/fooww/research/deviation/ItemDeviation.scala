@@ -1,12 +1,17 @@
-package com.fooww.research
+package com.fooww.research.deviation
 
 import org.apache.spark.rdd.RDD
 
 /**
   * @author ：zwy
   */
-object SlopeOne {
+object ItemDeviation {
 
+  /**
+    * 获得物品偏差矩阵,步骤4
+    * @param rant user,item,rant
+    * @return item,item,deviation
+    */
   def getItemDeviation(rant:RDD[(Long,Long,Double)]):RDD[(Long,Long,Double)]={
     val user_item_score = rant.map(f=>{
       (f._1,(f._2,f._3))
