@@ -13,8 +13,12 @@ object Main {
     val sc = session.sparkContext
     val rantRDD:RDD[(Long,Long,Int)] = sc.textFile("").map(_.split(",")).map(x=>(x(0).toLong,x(1).toLong,x(2).toInt))
     val slopeRecommendRDD = Recommend.getSlopeRDD(rantRDD)
-    val mae = MAE.getMae(slopeRecommendRDD,rantRDD)
+    val slopeMae = MAE.getMae(slopeRecommendRDD,rantRDD)
+    print(slopeMae)
 
-    print(mae)
+    val cfRecommendRDD = Recommend.getCFRDD(rantRDD)
+    val cfMae = MAE.getMae(cfRecommendRDD,rantRDD)
+    print(cfMae)
+
   }
 }
