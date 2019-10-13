@@ -14,14 +14,15 @@ object Recommend {
 
   def getSlopeRDD(rant:RDD[(Long,Long,Int)]):RDD[(Long, Long, Double)]={
     val itemSimRDD = ItemSimilarity.getCosineSimilarity(rant)
-    val userItemSimRDD = UserItemSimilarity.getUserItemAverageSimilarity(rant,userItemSimRDD)
+    val userSimRDD = UserSimilarity.getCosineSimilarity(rant)
+    val userItemSimRDD = UserItemSimilarity.getUserItemAverageSimilarity(rant,userSimRDD)
     val itemDevRDD = ItemDeviation.getItemDeviation(rant)
     Predict.getPredict(itemDevRDD,rant,itemSimRDD,userItemSimRDD)
   }
 
   def getCFRDD(rant:RDD[(Long,Long,Int)]):RDD[(Long,Long,Double)]={
 
-    val rank = 100
+    val rank = 10
     val numIteration = 100
     val rantings = rant.map(f=>Rating(f._1.toInt,f._2.toInt,f._3))
 

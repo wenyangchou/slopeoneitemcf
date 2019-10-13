@@ -22,7 +22,7 @@ object ItemDeviation {
     })
     val itemItem_deviation = itemItem_score.reduceByKey(_+_)
     val resultRDD = itemItem_deviation.map(f=>{
-      (f._1._1,f._1._2,f._2)
+      (f._1._1,f._1._2,f._2.toDouble)
     })
     resultRDD
   }
