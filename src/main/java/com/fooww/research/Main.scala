@@ -15,7 +15,7 @@ object Main {
     val session = SparkSession.builder().appName("slope").master("local").getOrCreate()
     val sc = session.sparkContext
 
-    val rantRDD:RDD[(Long,Long,Int)] = sc.parallelize(lines).map(_.split(",")).map(x=>(x(0).toLong,x(1).toLong,x(2).toInt))
+    val rantRDD:RDD[(Long,Long,Double)] = sc.parallelize(lines).map(_.split(",")).map(x=>(x(0).toLong,x(1).toLong,x(2).toDouble))
     val slopeRecommendRDD = Recommend.getSlopeRDD(rantRDD)
     val slopeMae = MAE.getMae(slopeRecommendRDD,rantRDD,session)
 

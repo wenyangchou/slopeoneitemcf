@@ -12,7 +12,7 @@ object ItemDeviation {
     * @param rant user,item,rant
     * @return item,item,deviation
     */
-  def getItemDeviation(rant:RDD[(Long,Long,Int)]):RDD[(Long,Long,Double)]={
+  def getItemDeviation(rant:RDD[(Long,Long,Double)]):RDD[(Long,Long,Double)]={
     val user_item_score = rant.map(f=>{
       (f._1,(f._2,f._3))
     })

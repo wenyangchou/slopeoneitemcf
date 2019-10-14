@@ -12,7 +12,7 @@ import org.apache.spark.sql.SparkSession
   */
 object Recommend {
 
-  def getSlopeRDD(rant:RDD[(Long,Long,Int)]):RDD[(Long, Long, Double)]={
+  def getSlopeRDD(rant:RDD[(Long,Long,Double)]):RDD[(Long, Long, Double)]={
     val itemSimRDD = ItemSimilarity.getCosineSimilarity(rant)
     val userSimRDD = UserSimilarity.getCosineSimilarity(rant)
     val userItemSimRDD = UserItemSimilarity.getUserItemAverageSimilarity(rant,userSimRDD)
@@ -20,7 +20,7 @@ object Recommend {
     Predict.getPredict(itemDevRDD,rant,itemSimRDD,userItemSimRDD)
   }
 
-  def getCFRDD(rant:RDD[(Long,Long,Int)]):RDD[(Long,Long,Double)]={
+  def getCFRDD(rant:RDD[(Long,Long,Double)]):RDD[(Long,Long,Double)]={
 
     val rank = 10
     val numIteration = 1

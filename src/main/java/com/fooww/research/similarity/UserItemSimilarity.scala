@@ -11,7 +11,8 @@ object UserItemSimilarity {
    * @param userSimilarity user,user,similarity
    * @return user,item,averageSimilarity
    */
-  def getUserItemAverageSimilarity(rant: RDD[(Long, Long, Int)], userSimilarity: RDD[(Long, Long, Double)]): RDD[(Long, Long, Double)] = {
+  def getUserItemAverageSimilarity(rant: RDD[(Long, Long, Double)], userSimilarity: RDD[(Long, Long, Double)]): RDD[(Long, Long,
+    Double)] = {
 
     val item_number = rant.map(f => (f._2, 1)).reduceByKey(_ + _)
 

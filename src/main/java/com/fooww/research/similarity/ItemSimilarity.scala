@@ -13,7 +13,7 @@ object ItemSimilarity {
     * @param rantRDD  user,item,rant
     * @return item,item,similarity
     */
-  def getCosineSimilarity(rantRDD:RDD[(Long,Long,Int)]):RDD[(Long,Long,Double)]={
+  def getCosineSimilarity(rantRDD:RDD[(Long,Long,Double)]):RDD[(Long,Long,Double)]={
     val user_item_score = rantRDD.map(f => (f._1, (f._2, f._3)))
 
     val user_item_score_item_score = user_item_score.join(user_item_score)

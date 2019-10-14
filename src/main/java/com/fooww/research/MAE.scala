@@ -8,7 +8,7 @@ import org.apache.spark.sql.SparkSession
   */
 object MAE {
 
-  def getMae(trainRDD:RDD[(Long,Long,Double)],testRDD:RDD[(Long,Long,Int)],session:SparkSession)={
+  def getMae(trainRDD:RDD[(Long,Long,Double)],testRDD:RDD[(Long,Long,Double)],session:SparkSession)={
 
     val train = trainRDD.map(f=>{
       ((f._1,f._2),f._3)

@@ -4,7 +4,8 @@ import org.apache.spark.rdd.RDD
 
 object Predict {
 
-  def getPredict(dev: RDD[(Long, Long, Double)], rant: RDD[(Long, Long, Int)], itemSim: RDD[(Long, Long, Double)], userItemSim: RDD[(Long, Long, Double)]): RDD[(Long, Long, Double)] = {
+  def getPredict(dev: RDD[(Long, Long, Double)], rant: RDD[(Long, Long, Double)], itemSim: RDD[(Long, Long, Double)],
+                 userItemSim: RDD[(Long, Long, Double)]): RDD[(Long, Long, Double)] = {
 
     val item_user_rant = rant.map(f => (f._2, (f._1, f._3)))
     val item_item_dev = dev.map(f => (f._1, (f._2, f._3)))
