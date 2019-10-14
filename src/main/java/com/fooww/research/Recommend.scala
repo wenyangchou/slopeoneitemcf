@@ -23,10 +23,10 @@ object Recommend {
   def getCFRDD(rant:RDD[(Long,Long,Int)]):RDD[(Long,Long,Double)]={
 
     val rank = 10
-    val numIteration = 100
+    val numIteration = 1
     val rantings = rant.map(f=>Rating(f._1.toInt,f._2.toInt,f._3))
 
-    val model = ALS.train(rantings,rank,numIteration,0.01)
+    val model = ALS.train(rantings,rank,numIteration,1)
 
     val userRDD = rant.map(_._1.toInt).distinct()
     val itemRDD = rant.map(_._2.toInt).distinct()

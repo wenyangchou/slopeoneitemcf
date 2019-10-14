@@ -1,13 +1,14 @@
 package com.fooww.research
 
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.SparkSession
 
 /**
   * @author ：zwy
   */
 object MAE {
 
-  def getMae(trainRDD:RDD[(Long,Long,Double)],testRDD:RDD[(Long,Long,Int)])={
+  def getMae(trainRDD:RDD[(Long,Long,Double)],testRDD:RDD[(Long,Long,Int)],session:SparkSession)={
 
     val train = trainRDD.map(f=>{
       ((f._1,f._2),f._3)
@@ -21,22 +22,9 @@ object MAE {
       (f._1,Math.pow(f._2._1 - f._2._2,2) )
     })
 
-    var count = 0
-    var mae:Double = 0
-
-    subRDD.foreachPartition(partition=>{
-      partition.foreach(f=>{
-        count = count+1
-      })
-    })
-
-    subRDD.foreachPartition(partition=>{
-      partition.foreach(f=>{
-        mae = mae + f._2 /count
-      })
-    })
-
-    mae
+    val df = session.createDataFrame(subRDD)
+    val result = df.agg(("_2","avg")).collect()(0).get(0)
+    result
   }
 
 }
