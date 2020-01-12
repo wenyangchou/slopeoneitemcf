@@ -8,7 +8,7 @@
     <artifactId>slope-one-itemcf</artifactId>
     <version>1.0.0</version>
     <properties>
-        <spark.version>2.3.2</spark.version>
+        <spark.version>2.4.4</spark.version>
         <scala.version>2.11.8</scala.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
