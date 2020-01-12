@@ -19,7 +19,7 @@ object MAE {
     })
 
     val subRDD = test.join(train).map(f=>{
-      (f._1,Math.pow(f._2._1 - f._2._2,2) )
+      (f._1,Math.abs(f._2._1 - f._2._2) )
     })
 
     val df = session.createDataFrame(subRDD)
