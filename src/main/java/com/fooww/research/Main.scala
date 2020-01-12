@@ -1,5 +1,6 @@
 package com.fooww.research
 
+import com.fooww.research.mae.MAE
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 

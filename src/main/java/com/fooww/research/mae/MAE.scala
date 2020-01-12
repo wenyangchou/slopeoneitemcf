@@ -1,4 +1,4 @@
-package com.fooww.research
+package com.fooww.research.mae
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
