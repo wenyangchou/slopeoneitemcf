@@ -15,10 +15,14 @@ public class FileUtil {
         BufferedReader bufferedReader = null;
         BufferedWriter trainFileWriter = null;
         BufferedWriter testFileWriter = null;
+        FileEntity fileEntity = new FileEntity();
         try {
              bufferedReader= new BufferedReader(new FileReader(inputFile));
             String trainFile = "train.cvs";
             String testFile = "test.cvs";
+
+            fileEntity.setTestFile(new File(testFile).getAbsolutePath());
+            fileEntity.setTrainFile(new File(trainFile).getAbsolutePath());
 
             trainFileWriter = new BufferedWriter(new FileWriter(trainFile));
             testFileWriter = new BufferedWriter(new FileWriter(testFile));
@@ -51,9 +55,7 @@ public class FileUtil {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-
-
+        return fileEntity;
     }
 }
