@@ -1,12 +1,24 @@
 package com.fooww.research.slopeone;
 
+import com.fooww.research.entity.UserItemScore;
 import com.fooww.research.mae.MaeJava;
+import org.apache.mahout.cf.taste.common.Refreshable;
+import org.apache.mahout.cf.taste.common.TasteException;
+import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
+import org.apache.mahout.cf.taste.impl.common.FastIDSet;
+import org.apache.mahout.cf.taste.impl.common.LongPrimitiveIterator;
+import org.apache.mahout.cf.taste.impl.model.GenericBooleanPrefDataModel;
+import org.apache.mahout.cf.taste.impl.model.GenericDataModel;
+import org.apache.mahout.cf.taste.impl.model.GenericUserPreferenceArray;
+import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
+import org.apache.mahout.cf.taste.impl.recommender.slopeone.SlopeOneRecommender;
+import org.apache.mahout.cf.taste.model.DataModel;
+import org.apache.mahout.cf.taste.model.PreferenceArray;
+import org.apache.mahout.cf.taste.recommender.RecommendedItem;
+import org.apache.mahout.cf.taste.recommender.Recommender;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * author:zwy
@@ -71,16 +83,69 @@ public class InputData {
         System.out.println(mae);
     }
 
-    public static void main(String[] args) {
-        mae("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv");
-        File dataFile=new File("d:/cf.txt");
-        DataModel model = new FileDataModel(dataFile);
-        Recommender oneRecommender=new SlopeOneRecommender(model);
+    public static void maeMahout(String file) throws Exception{
+        Map<Long,Map<Long,Float>> data = loadFromFile(file);
 
-        List<RecommendedItem>  list=oneRecommender.recommend(3, 10);
-        for (RecommendedItem recommendedItem : list) {
-            System.out.println(recommendedItem.getItemID()+"->"+recommendedItem.getValue());
+        int currentNumber = 0;
+        Map<Long,Map<Long,Float>> trainData = new HashMap<>();
+        Map<Long,Map<Long,Float>> testData = new HashMap<>();
+
+        for (Long userId: data.keySet()){
+            currentNumber++;
+            if (currentNumber%10<8){
+                trainData.put(userId,data.get(userId));
+            }else {
+                testData.put(userId,data.get(userId));
+            }
         }
+
+        DataModel dataModel = loadInMahout(trainData);
+        Recommender oneRecommender=new SlopeOneRecommender(dataModel);
+
+        List<Float> observe = new ArrayList<>();
+        List<Float> predict = new ArrayList<>();
+        testData.forEach((userId,map)-> map.forEach((itemId, score)->{
+
+            try {
+                Float predictScore = oneRecommender.estimatePreference(userId,itemId);
+                observe.add(score);
+                predict.add(predictScore);
+            } catch (TasteException e) {
+                e.printStackTrace();
+            }
+
+        }));
+
+        double mae = MaeJava.getMae(observe,predict);
+        System.out.println(mae);
+    }
+
+    public static DataModel loadInMahout(Map<Long,Map<Long,Float>> trainData){
+        FastByIDMap<PreferenceArray> preMap = new FastByIDMap<>();
+
+        trainData.forEach((userId,itemIdScoreMap)->{
+            PreferenceArray preferences = new GenericUserPreferenceArray(itemIdScoreMap.size());
+            preferences.setUserID(0,userId);
+            int index = 0;
+            for (Long itemId : itemIdScoreMap.keySet()){
+                preferences.setItemID(index,itemId);
+                preferences.setValue(index,itemIdScoreMap.get(itemId));
+                index++;
+            }
+            preMap.put(userId,preferences);
+
+        });
+
+        return new GenericDataModel(preMap);
+    }
+
+
+    public static void main(String[] args) throws Exception{
+
+
+//        File dataFile=new File("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv");
+
+        maeMahout("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv");
     }
 
 }
