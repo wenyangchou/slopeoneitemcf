@@ -46,8 +46,9 @@ public class MaeJava {
         double sumMae = 0D;
 
         for (int i = 0; i < observe.size(); i++) {
-            sumMae += Math.abs(observe.get(i) - predict.get(i))/totalNumber;
+            sumMae += Math.abs(observe.get(i) - predict.get(i));
         }
-        return sumMae;
+        System.out.println("sum:"+sumMae);
+        return sumMae/totalNumber;
     }
 }

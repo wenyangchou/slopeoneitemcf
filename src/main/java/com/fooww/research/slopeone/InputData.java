@@ -20,9 +20,9 @@ public class InputData {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))){
             String line;
             while ((line=bufferedReader.readLine())!=null){
-                Long userId = Long.parseLong(line.split(" ")[0]) ;
-                Long itemId = Long.parseLong(line.split(" ")[1]) ;
-                Float score = Float.parseFloat(line.split(" ")[2]);
+                Long userId = Long.parseLong(line.split(",")[0]) ;
+                Long itemId = Long.parseLong(line.split(",")[1]) ;
+                Float score = Float.parseFloat(line.split(",")[2]);
                 Map<Long,Float> itemScoreMap = data.getOrDefault(userId,new HashMap<>());
                 itemScoreMap.put(itemId,score);
                 data.put(userId,itemScoreMap);
@@ -69,7 +69,18 @@ public class InputData {
 
         double mae = MaeJava.getMae(observe,predict);
         System.out.println(mae);
+    }
 
+    public static void main(String[] args) {
+        mae("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv");
+        File dataFile=new File("d:/cf.txt");
+        DataModel model = new FileDataModel(dataFile);
+        Recommender oneRecommender=new SlopeOneRecommender(model);
+
+        List<RecommendedItem>  list=oneRecommender.recommend(3, 10);
+        for (RecommendedItem recommendedItem : list) {
+            System.out.println(recommendedItem.getItemID()+"->"+recommendedItem.getValue());
+        }
     }
 
 }

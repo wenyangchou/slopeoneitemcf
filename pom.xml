@@ -122,6 +122,22 @@
             <artifactId>lombok</artifactId>
             <version>1.18.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.mahout</groupId>
+            <artifactId>mahout-core</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.mahout</groupId>
+            <artifactId>mahout-math</artifactId>
+            <version>0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.mahout</groupId>
+            <artifactId>mahout-integration</artifactId>
+            <version>0.8</version>
+        </dependency>
     </dependencies>
 
 
