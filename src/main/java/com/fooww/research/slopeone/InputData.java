@@ -1,7 +1,9 @@
 package com.fooww.research.slopeone;
 
+import com.fooww.research.entity.FileEntity;
 import com.fooww.research.entity.UserItemScore;
 import com.fooww.research.mae.MaeJava;
+import com.fooww.research.util.FileUtil;
 import org.apache.mahout.cf.taste.common.Refreshable;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
@@ -83,41 +85,50 @@ public class InputData {
         System.out.println(mae);
     }
 
-    public static void maeMahout(String file) throws Exception{
-        Map<Long,Map<Long,Float>> data = loadFromFile(file);
+    public static void maeMahout(String file,int trainNumber) {
 
-        int currentNumber = 0;
-        Map<Long,Map<Long,Float>> trainData = new HashMap<>();
-        Map<Long,Map<Long,Float>> testData = new HashMap<>();
+        try {
+            FileEntity fileEntity = FileUtil.splitFile(file,trainNumber);
+            String trainFile = fileEntity.getTrainFile();
+            DataModel dataModel = new FileDataModel(new File(trainFile));
+            Recommender oneRecommender=new SlopeOneRecommender(dataModel);
+            List<UserItemScore> userItemScores = loadItemFromFile(file);
 
-        for (Long userId: data.keySet()){
-            currentNumber++;
-            if (currentNumber%10<8){
-                trainData.put(userId,data.get(userId));
-            }else {
-                testData.put(userId,data.get(userId));
-            }
+            List<Float> observe = new ArrayList<>();
+            List<Float> predict = new ArrayList<>();
+            userItemScores.forEach(userItemScore -> {
+                try {
+                    Float observeScore = userItemScore.getScore();
+                    Float predictScore = oneRecommender.estimatePreference(userItemScore.getUser(),userItemScore.getItem());
+                    observe.add(observeScore);
+                    predict.add(predictScore);
+                } catch (TasteException e) {
+                    e.printStackTrace();
+                }
+            });
+            Double mae = MaeJava.getMae(observe,predict);
+            System.out.println(mae);
+        } catch (IOException | TasteException e) {
+            e.printStackTrace();
         }
+    }
 
-        DataModel dataModel = loadInMahout(trainData);
-        Recommender oneRecommender=new SlopeOneRecommender(dataModel);
-
-        List<Float> observe = new ArrayList<>();
-        List<Float> predict = new ArrayList<>();
-        testData.forEach((userId,map)-> map.forEach((itemId, score)->{
-
-            try {
-                Float predictScore = oneRecommender.estimatePreference(userId,itemId);
-                observe.add(score);
-                predict.add(predictScore);
-            } catch (TasteException e) {
-                e.printStackTrace();
+    private static List<UserItemScore> loadItemFromFile(String file){
+        List<UserItemScore> userItemScores = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))){
+            String line;
+            while ((line=bufferedReader.readLine())!=null){
+                UserItemScore userItemScore = new UserItemScore();
+                userItemScore.setUser(Long.parseLong(line.split(",")[0]));
+                userItemScore.setItem(Long.parseLong(line.split(",")[1]));
+                userItemScore.setScore(Float.parseFloat(line.split(",")[2]));
+                userItemScores.add(userItemScore);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return userItemScores;
 
-        }));
-
-        double mae = MaeJava.getMae(observe,predict);
-        System.out.println(mae);
     }
 
     public static DataModel loadInMahout(Map<Long,Map<Long,Float>> trainData){
@@ -145,7 +156,6 @@ public class InputData {
 
 //        File dataFile=new File("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv");
 
-        maeMahout("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv");
     }
 
 }
