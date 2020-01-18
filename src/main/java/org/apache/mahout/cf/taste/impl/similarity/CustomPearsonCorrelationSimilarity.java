@@ -34,7 +34,7 @@ public final class CustomPearsonCorrelationSimilarity extends AbstractSimilarity
         } else {
             double denominator = Math.sqrt(sumX2) * Math.sqrt(sumY2);
             double result = denominator == 0.0D ? 0.0D / 0.0 : sumXY / denominator;
-            if (result>this.k){
+            if (result>=this.k){
                 return result;
             }else {
                 return 0D;

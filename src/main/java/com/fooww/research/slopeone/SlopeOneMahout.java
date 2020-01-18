@@ -3,6 +3,8 @@ package com.fooww.research.slopeone;
 import com.fooww.research.entity.FileEntity;
 import com.fooww.research.entity.UserItemScore;
 import com.fooww.research.mae.MaeJava;
+import com.fooww.research.mae.PrecisionJava;
+import com.fooww.research.mae.RecallJava;
 import com.fooww.research.util.FileUtil;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
@@ -30,26 +32,28 @@ public class SlopeOneMahout {
             FileEntity fileEntity = FileUtil.splitFile(file,trainNumber);
             String trainFile = fileEntity.getTrainFile();
             DataModel dataModel = new FileDataModel(new File(trainFile));
-            Recommender oneRecommender=new SlopeOneRecommender(dataModel);
-            List<UserItemScore> userItemScores = loadItemFromFile(file);
+            Recommender recommender=new SlopeOneRecommender(dataModel);
+            List<UserItemScore> userItemScores = loadItemFromFile(fileEntity.getTestFile());
 
             List<Float> observe = new ArrayList<>();
             List<Float> predict = new ArrayList<>();
-            userItemScores.forEach(userItemScore -> {
-                try {
-                    Float observeScore = userItemScore.getScore();
-                    Float predictScore = oneRecommender.estimatePreference(userItemScore.getUser(),userItemScore.getItem());
-                    if (!predictScore.isNaN()){
-                        observe.add(observeScore);
-                        predict.add(predictScore);
-                    }
+      userItemScores.forEach(
+          userItemScore -> {
+            try {
+              Float observeScore = userItemScore.getScore();
+              Float predictScore =
+                  recommender.estimatePreference(userItemScore.getUser(), userItemScore.getItem());
+              if (!predictScore.isNaN()) {
+                observe.add(observeScore);
+                predict.add(predictScore);
+              }
 
-                } catch (TasteException e) {
-                    e.printStackTrace();
-                }
-            });
+            } catch (TasteException e) {
+              System.out.println("no this user,pass");
+            }
+          });
 
-            Double mae = MaeJava.getMae(observe,predict);
+            Double mae = RecallJava.getPrecision(observe,predict,20000);
             System.out.println(mae);
         } catch (IOException | TasteException e) {
             System.out.println("no this user,pass");
@@ -57,6 +61,6 @@ public class SlopeOneMahout {
     }
 
     public static void main(String[] args) {
-        maeMahout("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv",60000);
+    maeMahout("C:\\Users\\fooww\\Desktop\\数据\\数据\\ml-100k.csv", 80000);
     }
 }

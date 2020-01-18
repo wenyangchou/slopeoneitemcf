@@ -35,4 +35,7 @@ object UserItemSimilarity {
     result
   }
 
+  def main(args: Array[String]): Unit = {
+  }
+
 }

@@ -92,9 +92,10 @@ public class InputData {
             String line;
             while ((line=bufferedReader.readLine())!=null){
                 UserItemScore userItemScore = new UserItemScore();
-                userItemScore.setUser(Long.parseLong(line.split(",")[0]));
-                userItemScore.setItem(Long.parseLong(line.split(",")[1]));
-                userItemScore.setScore(Float.parseFloat(line.split(",")[2]));
+                String[] strs = line.split(",");
+                userItemScore.setUser(Long.parseLong(strs[0]));
+                userItemScore.setItem(Long.parseLong(strs[1]));
+                userItemScore.setScore(Float.parseFloat(strs[2]));
                 userItemScores.add(userItemScore);
             }
         } catch (IOException e) {
@@ -121,14 +122,6 @@ public class InputData {
         });
 
         return new GenericDataModel(preMap);
-    }
-
-
-    public static void main(String[] args) throws Exception{
-
-
-//        File dataFile=new File("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv");
-
     }
 
 }

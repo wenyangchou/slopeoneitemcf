@@ -3,6 +3,8 @@ package com.fooww.research.cf;
 import com.fooww.research.entity.FileEntity;
 import com.fooww.research.entity.UserItemScore;
 import com.fooww.research.mae.MaeJava;
+import com.fooww.research.mae.PrecisionJava;
+import com.fooww.research.mae.RecallJava;
 import com.fooww.research.util.FileUtil;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.model.file.FileDataModel;
@@ -35,28 +37,29 @@ public class ItemCFMahout {
             FileEntity fileEntity = FileUtil.splitFile(file,trainNumber);
             String trainFile = fileEntity.getTrainFile();
             DataModel dataModel = new FileDataModel(new File(trainFile));
-            ItemSimilarity itemSimilarity = new CustomPearsonCorrelationSimilarity(dataModel,0.001);
+            ItemSimilarity itemSimilarity = new CustomPearsonCorrelationSimilarity(dataModel,0);
 
             Recommender recommender = new GenericItemBasedRecommender(dataModel,itemSimilarity);
-            List<UserItemScore> userItemScores = loadItemFromFile(file);
+            List<UserItemScore> userItemScores = loadItemFromFile(fileEntity.getTestFile());
 
             List<Float> observe = new ArrayList<>();
             List<Float> predict = new ArrayList<>();
-            userItemScores.forEach(userItemScore -> {
-                try {
-                    Float observeScore = userItemScore.getScore();
-                    Float predictScore = recommender.estimatePreference(userItemScore.getUser(),userItemScore.getItem());
+      userItemScores.forEach(
+          userItemScore -> {
+            try {
+              Float observeScore = userItemScore.getScore();
+              Float predictScore =
+                  recommender.estimatePreference(userItemScore.getUser(), userItemScore.getItem());
+              if (!predictScore.isNaN()) {
+                observe.add(observeScore);
+                predict.add(predictScore);
+              }
 
-                    if (!predictScore.isNaN()){
-                        observe.add(observeScore);
-                        predict.add(predictScore);
-                    }
-
-                } catch (TasteException e) {
-                    System.out.println("no this user ,pass");
-                }
-            });
-            Double mae = MaeJava.getMae(observe,predict);
+            } catch (TasteException e) {
+//              System.out.println("no this user ,pass");
+            }
+          });
+            Double mae = RecallJava.getPrecision(observe, predict,20000);
             System.out.println(mae);
         } catch (IOException | TasteException e) {
             e.printStackTrace();
@@ -64,6 +67,6 @@ public class ItemCFMahout {
     }
 
     public static void main(String[] args) {
-        maeItemCF("/Users/zhouwenyang/Desktop/郝志远数据/ml-100k.csv",60000);
+    maeItemCF("C:\\Users\\fooww\\Desktop\\数据\\数据\\ml-100k.csv", 80000);
     }
 }
