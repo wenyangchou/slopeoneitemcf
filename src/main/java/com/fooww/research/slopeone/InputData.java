@@ -85,35 +85,8 @@ public class InputData {
         System.out.println(mae);
     }
 
-    public static void maeMahout(String file,int trainNumber) {
 
-        try {
-            FileEntity fileEntity = FileUtil.splitFile(file,trainNumber);
-            String trainFile = fileEntity.getTrainFile();
-            DataModel dataModel = new FileDataModel(new File(trainFile));
-            Recommender oneRecommender=new SlopeOneRecommender(dataModel);
-            List<UserItemScore> userItemScores = loadItemFromFile(file);
-
-            List<Float> observe = new ArrayList<>();
-            List<Float> predict = new ArrayList<>();
-            userItemScores.forEach(userItemScore -> {
-                try {
-                    Float observeScore = userItemScore.getScore();
-                    Float predictScore = oneRecommender.estimatePreference(userItemScore.getUser(),userItemScore.getItem());
-                    observe.add(observeScore);
-                    predict.add(predictScore);
-                } catch (TasteException e) {
-                    e.printStackTrace();
-                }
-            });
-            Double mae = MaeJava.getMae(observe,predict);
-            System.out.println(mae);
-        } catch (IOException | TasteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static List<UserItemScore> loadItemFromFile(String file){
+    public static List<UserItemScore> loadItemFromFile(String file){
         List<UserItemScore> userItemScores = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))){
             String line;
